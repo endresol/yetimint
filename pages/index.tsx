@@ -1,22 +1,56 @@
+import { PublicKey, publicKey, Umi } from "@metaplex-foundation/umi";
 import {
-  PublicKey,
-  publicKey,
-  Umi,
-} from "@metaplex-foundation/umi";
-import { DigitalAssetWithToken, JsonMetadata } from "@metaplex-foundation/mpl-token-metadata";
+  DigitalAssetWithToken,
+  JsonMetadata,
+} from "@metaplex-foundation/mpl-token-metadata";
 import dynamic from "next/dynamic";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { useUmi } from "../utils/useUmi";
-import { fetchCandyMachine, safeFetchCandyGuard, CandyGuard, CandyMachine } from "@metaplex-foundation/mpl-core-candy-machine"
+import {
+  fetchCandyMachine,
+  safeFetchCandyGuard,
+  CandyGuard,
+  CandyMachine,
+} from "@metaplex-foundation/mpl-core-candy-machine";
 import styles from "../styles/Home.module.css";
 import { guardChecker } from "../utils/checkAllowed";
-import { Center, Card, CardHeader, CardBody, StackDivider, Heading, Stack, useToast, Text, Skeleton, useDisclosure, Button, Modal, ModalBody, ModalCloseButton, ModalContent, Image, ModalHeader, ModalOverlay, Box, Divider, VStack, Flex } from '@chakra-ui/react';
-import { ButtonList } from "../components/mintButton";
-import { DasApiAssetAndAssetMintLimit, GuardReturn } from "../utils/checkerHelper";
+import {
+  Center,
+  Card,
+  CardHeader,
+  CardBody,
+  StackDivider,
+  Heading,
+  SimpleGrid,
+  Stack,
+  useToast,
+  Text,
+  Skeleton,
+  useDisclosure,
+  Button,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  Image,
+  ModalHeader,
+  ModalOverlay,
+  Box,
+  Divider,
+  VStack,
+  Flex,
+} from "@chakra-ui/react";
+import { ButtonList } from "../components/miniMintButton";
+import {
+  DasApiAssetAndAssetMintLimit,
+  GuardReturn,
+} from "../utils/checkerHelper";
 import { ShowNft } from "../components/showNft";
 import { InitializeModal } from "../components/initializeModal";
 import { image, headerText } from "../settings";
 import { useSolanaTime } from "@/utils/SolanaTimeContext";
+
+import Snow from "@/components/Snow";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -35,7 +69,6 @@ const useCandyMachine = (
   const [candyMachine, setCandyMachine] = useState<CandyMachine>();
   const [candyGuard, setCandyGuard] = useState<CandyGuard>();
   const toast = useToast();
-
 
   useEffect(() => {
     (async () => {
@@ -57,7 +90,10 @@ const useCandyMachine = (
 
         let candyMachine;
         try {
-          candyMachine = await fetchCandyMachine(umi, publicKey(candyMachineId));
+          candyMachine = await fetchCandyMachine(
+            umi,
+            publicKey(candyMachineId)
+          );
         } catch (e) {
           console.error(e);
           toast({
@@ -75,7 +111,10 @@ const useCandyMachine = (
         }
         let candyGuard;
         try {
-          candyGuard = await safeFetchCandyGuard(umi, candyMachine.mintAuthority);
+          candyGuard = await safeFetchCandyGuard(
+            umi,
+            candyMachine.mintAuthority
+          );
         } catch (e) {
           console.error(e);
           toast({
@@ -91,29 +130,39 @@ const useCandyMachine = (
           return;
         }
         setCandyGuard(candyGuard);
-        if (firstRun){
-          setfirstRun(false)
+        if (firstRun) {
+          setfirstRun(false);
         }
       }
     })();
-  }, [umi, checkEligibility]);
+  }, [umi, checkEligibility, candyMachineId, firstRun, setfirstRun, toast]);
 
   return { candyMachine, candyGuard };
-
 };
-
 
 export default function Home() {
   const umi = useUmi();
   const solanaTime = useSolanaTime();
   const toast = useToast();
-  const { isOpen: isShowNftOpen, onOpen: onShowNftOpen, onClose: onShowNftClose } = useDisclosure();
-  const { isOpen: isInitializerOpen, onOpen: onInitializerOpen, onClose: onInitializerClose } = useDisclosure();
-  const [mintsCreated, setMintsCreated] = useState<{ mint: PublicKey, offChainMetadata: JsonMetadata | undefined }[] | undefined>();
+  const {
+    isOpen: isShowNftOpen,
+    onOpen: onShowNftOpen,
+    onClose: onShowNftClose,
+  } = useDisclosure();
+  const {
+    isOpen: isInitializerOpen,
+    onOpen: onInitializerOpen,
+    onClose: onInitializerClose,
+  } = useDisclosure();
+  const [mintsCreated, setMintsCreated] = useState<
+    | { mint: PublicKey; offChainMetadata: JsonMetadata | undefined }[]
+    | undefined
+  >();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const [ownedTokens, setOwnedTokens] = useState<DigitalAssetWithToken[]>();
-  const [ownedCoreAssets, setOwnedCoreAssets] = useState<DasApiAssetAndAssetMintLimit[]>();
+  const [ownedCoreAssets, setOwnedCoreAssets] =
+    useState<DasApiAssetAndAssetMintLimit[]>();
 
   const [guards, setGuards] = useState<GuardReturn[]>([
     { label: "startDefault", allowed: false, maxAmount: 0 },
@@ -121,18 +170,17 @@ export default function Home() {
   const [firstRun, setFirstRun] = useState(true);
   const [checkEligibility, setCheckEligibility] = useState<boolean>(true);
 
-
   if (!process.env.NEXT_PUBLIC_CANDY_MACHINE_ID) {
-    console.error("No candy machine in .env!")
-    if (!toast.isActive('no-cm')) {
+    console.error("No candy machine in .env!");
+    if (!toast.isActive("no-cm")) {
       toast({
-        id: 'no-cm',
-        title: 'No candy machine in .env!',
+        id: "no-cm",
+        title: "No candy machine in .env!",
         description: "Add your candy machine address to the .env file!",
-        status: 'error',
+        status: "error",
         duration: 999999,
         isClosable: true,
-      })
+      });
     }
   }
   const candyMachineId: PublicKey = useMemo(() => {
@@ -141,18 +189,25 @@ export default function Home() {
     } else {
       console.error(`NO CANDY MACHINE IN .env FILE DEFINED!`);
       toast({
-        id: 'no-cm',
-        title: 'No candy machine in .env!',
+        id: "no-cm",
+        title: "No candy machine in .env!",
         description: "Add your candy machine address to the .env file!",
-        status: 'error',
+        status: "error",
         duration: 999999,
         isClosable: true,
-      })
+      });
       return publicKey("11111111111111111111111111111111");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const { candyMachine, candyGuard } = useCandyMachine(umi, candyMachineId, checkEligibility, setCheckEligibility, firstRun, setFirstRun);
+  const { candyMachine, candyGuard } = useCandyMachine(
+    umi,
+    candyMachineId,
+    checkEligibility,
+    setCheckEligibility,
+    firstRun,
+    setFirstRun
+  );
 
   useEffect(() => {
     const checkEligibilityFunc = async () => {
@@ -160,9 +215,12 @@ export default function Home() {
         return;
       }
       setFirstRun(false);
-      
+
       const { guardReturn, ownedTokens, ownedCoreAssets } = await guardChecker(
-        umi, candyGuard, candyMachine, solanaTime
+        umi,
+        candyGuard,
+        candyMachine,
+        solanaTime
       );
 
       setOwnedTokens(ownedTokens);
@@ -187,56 +245,82 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [umi, checkEligibility, firstRun]);
 
+  const NFTInfo = () => {
+    return (
+      <>
+        {loading ? (
+          <> </>
+        ) : (
+          <Box
+            className={styles.icecard}
+            minWidth={"50px"}
+            minHeight={"50px"}
+            p={2}
+          >
+            <VStack>
+              <Text fontSize={"sm"}>Available NFTs:</Text>
+              <Text fontWeight={"semibold"}>
+                {Number(candyMachine?.data.itemsAvailable) -
+                  Number(candyMachine?.itemsRedeemed)}
+                /{Number(candyMachine?.data.itemsAvailable)}
+              </Text>
+            </VStack>
+          </Box>
+        )}
+        {umi.identity.publicKey === candyMachine?.authority ? (
+          <>
+            <Center>
+              <Button
+                backgroundColor={"red.200"}
+                marginTop={"10"}
+                onClick={onInitializerOpen}
+              >
+                Admin Menu
+              </Button>
+            </Center>
+            <Modal isOpen={isInitializerOpen} onClose={onInitializerClose}>
+              <ModalOverlay />
+              <ModalContent maxW="600px">
+                <ModalHeader>Initializer</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  <InitializeModal
+                    umi={umi}
+                    candyMachine={candyMachine}
+                    candyGuard={candyGuard}
+                  />
+                </ModalBody>
+              </ModalContent>
+            </Modal>
+          </>
+        ) : (
+          <></>
+        )}
+      </>
+    );
+  };
+
   const PageContent = () => {
     return (
       <>
-        <style jsx global>
-          {`
-      body {
-          background: #2d3748; 
-       }
-   `}
-        </style>
-        <Card>
-          <CardHeader>
-            <Flex minWidth='max-content' alignItems='center' gap='2'>
-              <Box>
-                <Heading size='md'>{headerText}</Heading>
-              </Box>
-              {loading ? (<></>) : (
-                <Flex justifyContent="flex-end" marginLeft="auto">
-                  <Box background={"teal.100"} borderRadius={"5px"} minWidth={"50px"} minHeight={"50px"} p={2} >
-                    <VStack >
-                      <Text fontSize={"sm"}>Available NFTs:</Text>
-                      <Text fontWeight={"semibold"}>{Number(candyMachine?.data.itemsAvailable) - Number(candyMachine?.itemsRedeemed)}/{Number(candyMachine?.data.itemsAvailable)}</Text>
-                    </VStack>
-                  </Box>
-                </Flex>
-              )}
-            </Flex>
-          </CardHeader>
+        <Card bgColor={"transparent"} boxShadow={"none"}>
+          <CardHeader></CardHeader>
 
           <CardBody>
-            <Center>
-              <Box
-                rounded={'lg'}
-                mt={-12}
-                pos={'relative'}>
+            {/* <Center>
+              <Box mt={-12} pos={"relative"}>
                 <Image
-                  rounded={'lg'}
-                  height={230}
-                  objectFit={'cover'}
+                  height={360}
+                  objectFit={"cover"}
                   alt={"project Image"}
                   src={image}
                 />
               </Box>
-            </Center>
-            <Stack divider={<StackDivider />} spacing='8'>
+            </Center> */}
+            <Stack divider={<StackDivider />} spacing="8">
               {loading ? (
                 <div>
                   <Divider my="10px" />
-                  <Skeleton height="30px" my="10px" />
-                  <Skeleton height="30px" my="10px" />
                   <Skeleton height="30px" my="10px" />
                 </div>
               ) : (
@@ -256,27 +340,7 @@ export default function Home() {
               )}
             </Stack>
           </CardBody>
-        </Card >
-        { umi.identity.publicKey === candyMachine?.authority ? (
-          <>
-            <Center>
-              <Button backgroundColor={"red.200"} marginTop={"10"} onClick={onInitializerOpen}>Admin Menu</Button>
-            </Center>
-            <Modal isOpen={isInitializerOpen} onClose={onInitializerClose}>
-              <ModalOverlay />
-              <ModalContent maxW="600px">
-                <ModalHeader>Initializer</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                  < InitializeModal umi={umi} candyMachine={candyMachine} candyGuard={candyGuard} />
-                </ModalBody>
-              </ModalContent>
-            </Modal>
-
-          </>)
-          :
-          (<></>)
-        }
+        </Card>
 
         <Modal isOpen={isShowNftOpen} onClose={onShowNftClose}>
           <ModalOverlay />
@@ -293,14 +357,21 @@ export default function Home() {
   };
 
   return (
-    <main>
-      <div className={styles.wallet}>
-        <WalletMultiButtonDynamic />
-      </div>
+    <>
+      <main className={styles.main}>
+        <Snow />
+        <div className={styles.wallet}>
+          <div>
+            <h1 className={styles.wallet__heading}>{headerText}</h1>
+            <NFTInfo />
+          </div>
+          <WalletMultiButtonDynamic />
+        </div>
 
-      <div className={styles.center}>
-        <PageContent key="content" />
-      </div>
-    </main>
+        <div className={styles.center}>
+          <PageContent key="content" />
+        </div>
+      </main>
+    </>
   );
 }

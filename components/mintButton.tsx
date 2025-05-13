@@ -1,5 +1,11 @@
-import { CandyGuard, CandyMachine } from "@metaplex-foundation/mpl-core-candy-machine";
-import { DasApiAssetAndAssetMintLimit, GuardReturn } from "../utils/checkerHelper";
+import {
+  CandyGuard,
+  CandyMachine,
+} from "@metaplex-foundation/mpl-core-candy-machine";
+import {
+  DasApiAssetAndAssetMintLimit,
+  GuardReturn,
+} from "../utils/checkerHelper";
 import {
   AddressLookupTableInput,
   KeypairSigner,
@@ -150,10 +156,16 @@ const mintClick = async (
         duration: 900,
         isClosable: true,
       });
-      const latestBlockhash = (await umi.rpc.getLatestBlockhash({commitment: "finalized"}));
-      routeBuild = routeBuild.setBlockhash(latestBlockhash)
-      await umi.rpc
-      .sendTransaction(routeBuild.build(umi), { skipPreflight:true, maxRetries: 1, preflightCommitment: "finalized", commitment: "finalized" })
+      const latestBlockhash = await umi.rpc.getLatestBlockhash({
+        commitment: "finalized",
+      });
+      routeBuild = routeBuild.setBlockhash(latestBlockhash);
+      await umi.rpc.sendTransaction(routeBuild.build(umi), {
+        skipPreflight: true,
+        maxRetries: 1,
+        preflightCommitment: "finalized",
+        commitment: "finalized",
+      });
     }
 
     // fetch LUT
@@ -179,8 +191,15 @@ const mintClick = async (
       nftsigners.push(nftMint);
     }
 
-    const mintArgsArray = mintArgsBuilder(guardToUse, ownedTokens, ownedCoreAssets, mintAmount);
-    const latestBlockhash = (await umi.rpc.getLatestBlockhash({commitment: "finalized"}));
+    const mintArgsArray = mintArgsBuilder(
+      guardToUse,
+      ownedTokens,
+      ownedCoreAssets,
+      mintAmount
+    );
+    const latestBlockhash = await umi.rpc.getLatestBlockhash({
+      commitment: "finalized",
+    });
 
     const mintTxs: { transaction: Transaction; signers: Signer[] }[] =
       await buildTxs(
@@ -191,8 +210,7 @@ const mintClick = async (
         guardToUse,
         mintArgsArray,
         tables,
-        latestBlockhash.blockhash,
-        buyBeer
+        latestBlockhash.blockhash
       );
     if (!mintTxs.length) {
       console.error("no mint tx built!");
@@ -200,14 +218,19 @@ const mintClick = async (
     }
 
     updateLoadingText(`Please sign`, guardList, guardToUse.label, setGuardList);
-    
+
     const signedTransactions = await signAllTransactions(mintTxs);
 
     let signatures: Uint8Array[] = [];
     let amountSent = 0;
     const sendPromises = signedTransactions.map((tx, index) => {
       return umi.rpc
-        .sendTransaction(tx, { skipPreflight:true, maxRetries: 1, preflightCommitment: "finalized", commitment: "finalized" })
+        .sendTransaction(tx, {
+          skipPreflight: true,
+          maxRetries: 1,
+          preflightCommitment: "finalized",
+          commitment: "finalized",
+        })
         .then((signature) => {
           console.log(
             `Transaction ${index + 1} resolved with signature: ${
@@ -242,7 +265,13 @@ const mintClick = async (
       status: "success",
       duration: 3000,
     });
-    const successfulMints = await verifyTx(umi, signatures, nftsigners, latestBlockhash, "finalized");
+    const successfulMints = await verifyTx(
+      umi,
+      signatures,
+      nftsigners,
+      latestBlockhash,
+      "finalized"
+    );
     updateLoadingText(
       "Fetching your NFT",
       guardList,
@@ -430,7 +459,7 @@ export function ButtonList({
   setMintsCreated,
   onOpen,
   setCheckEligibility,
-  ownedCoreAssets = []
+  ownedCoreAssets = [],
 }: Props): JSX.Element {
   const solanaTime = useSolanaTime();
   const [numberInputValues, setNumberInputValues] = useState<{

@@ -114,7 +114,7 @@ export const mintArgsBuilder = (
       } else {
         mintArgs.assetBurn = some({
           asset: nft.publicKey,
-          requiredCollection
+          requiredCollection,
         });
       }
     }
@@ -123,14 +123,13 @@ export const mintArgsBuilder = (
       const requiredCollection = guards.assetBurnMulti.value.requiredCollection;
       //TODO: have the use choose the NFT
       const assets = ownedCoreAssets.filter(
-        (el) =>
-          el.updateAuthority.address === requiredCollection
+        (el) => el.updateAuthority.address === requiredCollection
       );
       if (!assets) {
         console.error("no asset to burn found!");
       } else {
         mintArgs.assetBurnMulti = some({
-          assets: assets.map(asset => asset.publicKey),
+          assets: assets.map((asset) => asset.publicKey),
           requiredCollection,
         });
       }
@@ -150,25 +149,25 @@ export const mintArgsBuilder = (
         mintArgs.assetPayment = some({
           asset: nft.publicKey,
           requiredCollection,
-          destination: guards.assetPayment.value.destination
+          destination: guards.assetPayment.value.destination,
         });
       }
     }
 
     if (guards.assetPaymentMulti.__option === "Some") {
-      const requiredCollection = guards.assetPaymentMulti.value.requiredCollection;
+      const requiredCollection =
+        guards.assetPaymentMulti.value.requiredCollection;
       //TODO: have the use choose the NFT
       const assets = ownedCoreAssets.filter(
-        (el) =>
-          el.updateAuthority.address === requiredCollection
+        (el) => el.updateAuthority.address === requiredCollection
       );
       if (!assets) {
         console.error("no asset to pay found!");
       } else {
         mintArgs.assetPaymentMulti = some({
-          assets: assets.map(asset => asset.publicKey),
+          assets: assets.map((asset) => asset.publicKey),
           requiredCollection,
-          destination: guards.assetPaymentMulti.value.destination
+          destination: guards.assetPaymentMulti.value.destination,
         });
       }
     }
@@ -489,8 +488,7 @@ export const buildTx = (
   mintArgs: Partial<DefaultGuardSetMintArgs> | undefined,
   luts: AddressLookupTableInput[],
   latestBlockhash: BlockhashWithExpiryBlockHeight,
-  units: number,
-  buyBeer: boolean
+  units: number
 ) => {
   let tx = transactionBuilder().add(
     mintV1(umi, {
@@ -502,14 +500,7 @@ export const buildTx = (
       mintArgs,
     })
   );
-  if (buyBeer) {
-    tx = tx.prepend(
-      transferSol(umi, {
-        destination: publicKey("BeeryDvghgcKPTUw3N3bdFDFFWhTWdWHnsLuVebgsGSD"),
-        amount: sol(Number(0.005)),
-      })
-    );
-  }
+
   tx = tx.prepend(setComputeUnitLimit(umi, { units }));
   tx = tx.prepend(
     setComputeUnitPrice(umi, {
@@ -534,22 +525,14 @@ export const buildTxs = async (
       },
   mintArgsArray: Partial<DefaultGuardSetMintArgs>[] | undefined,
   luts: AddressLookupTableInput[],
-  latestBlockhash: string,
-  buyBeer: boolean
+  latestBlockhash: string
 ) => {
   const newBuilder = transactionBuilder()
     .prepend(setComputeUnitPrice(umi, { microLamports: 5 }))
     .prepend(setComputeUnitLimit(umi, { units: 1400000 }))
     .setBlockhash(latestBlockhash);
   let builder = newBuilder;
-  if (buyBeer) {
-    builder = builder.add(
-      transferSol(umi, {
-        destination: publicKey("BeeryDvghgcKPTUw3N3bdFDFFWhTWdWHnsLuVebgsGSD"),
-        amount: sol(Number(0.005 * nftMints.length)),
-      })
-    );
-  }
+
   const transactions: { transaction: Transaction; signers: Signer[] }[] = [];
   for (let i = 0; i < nftMints.length; i++) {
     let before = builder;

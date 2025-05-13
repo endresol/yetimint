@@ -73,3 +73,47 @@ button.wallet-adapter-button-trigger {
 button.wallet-adapter-button-trigger:hover {
   background-color: rgb(var(--hover-background-rgb)) !important;
 }
+
+.imagejump:hover img {
+  animation: complexBounce 1.5s infinite;
+}
+
+.nojump:hover {
+  cursor: not-allowed;
+}
+
+@keyframes complexBounce {
+/* Starting position */
+0% {
+  transform: translateY(0);
+}
+
+/* First small jump */
+15% {
+  transform: translateY(-8px);
+}
+30% {
+  transform: translateY(0);
+}
+
+/* Second small jump */
+45% {
+  transform: translateY(-8px);
+}
+60% {
+  transform: translateY(0);
+}
+
+/* One bigger jump */
+75% {
+  transform: translateY(-20px);
+}
+90% {
+  transform: translateY(0);
+}
+
+/* Back to starting position */
+100% {
+  transform: translateY(0);
+}
+}

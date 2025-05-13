@@ -1,7 +1,13 @@
 .wallet { 
   display: flex;
-  padding: 3rem;
-  flex-direction: row-reverse;
+  padding: 3rem; 
+  justify-content: space-between;
+}
+
+.wallet__heading {
+  font-size: 2rem;
+  font-weight: 600;
+  color: rgb(var(--background-rgb));
 }
 
 .center {
@@ -11,6 +17,71 @@
   max-width: 600px;
   margin: 0 auto;
 }
+
+.main {
+  background-image: url("/Snow-bg.png");
+  /* background: linear-gradient(to bottom, #2d91c2 0%, #1e528e 100%); */
+  overflow: hidden;
+  filter: drop-shadow(0 0 10px white);
+
+  height: 100vh; /* Full viewport height */
+  width: 100%;
+  background-size: cover; /* Cover the entire container */
+  background-position: center; /* Center the background image */
+}
+
+.icecard{
+  background: linear-gradient(135deg, #e0f7fa, #b2ebf2); /* Light blue gradient */
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+@keyframes fall {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    top: 100vh;
+    opacity: 1;
+  }
+}
+@keyframes sway {
+  0% {
+    margin-left: 0;
+  }
+  25% {
+    margin-left: 50px;
+  }
+  50% {
+    margin-left: -50px;
+  }
+  75% {
+    margin-left: 50px;
+  }
+  100% {
+    margin-left: 0;
+  }
+}
+
+#snow-container {  
+  height: 100vh;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  transition: opacity 500ms;
+  width: 100%;
+}
+
+.snow {
+  animation: fall ease-in infinite, sway ease-in-out infinite;
+  color: skyblue;
+  position: absolute;
+}
+
 
 .form > * + * {
   display: flex;

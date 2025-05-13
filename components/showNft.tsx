@@ -73,23 +73,26 @@ export default function Card({
     return <></>;
   }
   const image = metadata.animation_url ?? metadata.image;
+
   return (
-    <Box position={"relative"} width={"full"} overflow={"hidden"}>
-      <Box
-        key={image}
-        height={"sm"}
-        position="relative"
-        backgroundPosition="center"
-        backgroundRepeat="no-repeat"
-        backgroundSize="cover"
-        backgroundImage={`url(${image})`}
-      />
-      <Text fontWeight={"semibold"} marginTop={"15px"}>
-        {metadata.name}
-      </Text>
-      <Text>{metadata.description}</Text>
-      <Traits metadata={metadata} />
-    </Box>
+    <>
+      <Box position={"relative"} width={"full"} overflow={"hidden"}>
+        <Box
+          key={image}
+          height={"sm"}
+          position="relative"
+          backgroundPosition="center"
+          backgroundRepeat="no-repeat"
+          backgroundSize="cover"
+          backgroundImage={`url(${image})`}
+        />
+        <Text fontWeight={"semibold"} marginTop={"15px"}>
+          {metadata.name}
+        </Text>
+        <Text>{metadata.description}</Text>
+        <Traits metadata={metadata} />
+      </Box>
+    </>
   );
 }
 
@@ -99,28 +102,55 @@ type Props = {
     | undefined;
 };
 
-export const ShowNft = ({ nfts }: Props) => {
-  if (nfts === undefined) {
-    return <></>;
-  }
-
-  const cards = nfts.map((nft, index) => (
-    <AccordionItem key={nft.mint + "Accordion"}>
+export const ShowAnimationCard = () => {
+  const coinimage = "/iceflipC.mp4";
+  return (
+    <AccordionItem key={"MintSuccessAccordion"}>
       <h2>
         <AccordionButton>
           <Box as="span" flex="1" textAlign="left">
-            {nft.offChainMetadata?.name}
+            <Text fontWeight={"semibold"}>Mint Success</Text>
           </Box>
           <AccordionIcon />
         </AccordionButton>
       </h2>
       <AccordionPanel pb={4}>
-        <Card metadata={nft.offChainMetadata} key={nft.mint} />
+        <video width="520" height="240" controls autoPlay preload="none">
+          <source src={coinimage} type="video/mp4" />
+          Your browser does not support the video tag...
+        </video>
       </AccordionPanel>
     </AccordionItem>
+  );
+};
+
+export const ShowNft = ({ nfts }: Props) => {
+  if (nfts === undefined) {
+    return <></>;
+  }
+
+  const coinimage = "/iceflipC.mp4";
+
+  const cards = nfts.map((nft, index) => (
+    <>
+      <AccordionItem key={nft.mint + "Accordion"}>
+        <h2>
+          <AccordionButton>
+            <Box as="span" flex="1" textAlign="left">
+              {nft.offChainMetadata?.name}
+            </Box>
+            <AccordionIcon />
+          </AccordionButton>
+        </h2>
+        <AccordionPanel pb={4}>
+          <Card metadata={nft.offChainMetadata} key={nft.mint} />
+        </AccordionPanel>
+      </AccordionItem>
+    </>
   ));
   return (
-    <Accordion defaultIndex={[0]} allowMultiple={true} >
+    <Accordion defaultIndex={[0]} allowMultiple={false}>
+      <ShowAnimationCard />
       {cards}
     </Accordion>
   );
