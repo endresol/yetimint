@@ -28,7 +28,7 @@ export const mintText = [
 ];
 
 //header image in the ui. replace with your own
-export const image = "/ice-coin-1.png";
+export const image = "/ice-coin-1.webp";
 
 //website title
 export const headerText = "Yetis Coinflip NFT";

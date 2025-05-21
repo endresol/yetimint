@@ -256,7 +256,7 @@ const mintClick = async (
       throw new Error("no tx was created");
     }
     updateLoadingText(
-      `finalizing transaction(s)`,
+      `Finalising transaction(s)`,
       guardList,
       guardToUse.label,
       setGuardList

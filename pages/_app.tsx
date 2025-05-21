@@ -6,8 +6,8 @@ import { useMemo } from "react";
 import { UmiProvider } from "../utils/UmiProvider";
 import "@/styles/globals.css";
 import "@solana/wallet-adapter-react-ui/styles.css";
-import { ChakraProvider } from '@chakra-ui/react'
-import { image, headerText } from 'settings'
+import { ChakraProvider } from "@chakra-ui/react";
+import { image, headerText } from "settings";
 import { SolanaTimeProvider } from "@/utils/SolanaTimeContext";
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -22,14 +22,14 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta property="og:title" content={headerText} />
         <meta
           property="og:description"
-          content="Website is based on Mark Sackerbergs work"
+          content="Welcome to the ICE Coin Flip - a high stakes spectacle where every wallet becomes a gambler, and every flip becomes lore"
         />
-        <meta name="description" content="Website is based on Mark Sackerbergs work" />
-
         <meta
-          property="og:image"
-          content={image}
+          name="description"
+          content="Welcome to the ICE Coin Flip - a high stakes spectacle where every wallet becomes a gambler, and every flip becomes lore"
         />
+
+        <meta property="og:image" content={image} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>{headerText}</title>
         <link rel="icon" href="/favicon.ico" />
