@@ -1,6 +1,13 @@
 import { JsonMetadata } from "@metaplex-foundation/mpl-token-metadata";
 import { PublicKey } from "@metaplex-foundation/umi";
-import { Box, Text, Divider, SimpleGrid, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  Divider,
+  SimpleGrid,
+  VStack,
+  Image,
+} from "@chakra-ui/react";
 import React from "react";
 import {
   Accordion,
@@ -84,8 +91,32 @@ export default function Card({
           backgroundPosition="center"
           backgroundRepeat="no-repeat"
           backgroundSize="cover"
-          backgroundImage={`url(${image})`}
         />
+        {metadata.animation_url ? (
+          <video
+            width="520"
+            height="240"
+            controls
+            autoPlay
+            preload="none"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              zIndex: 1,
+              borderRadius: "10px",
+            }}
+          >
+            <source src={metadata.animation_url} type="video/mp4" />
+            Your browser does not support the video tag...
+          </video>
+        ) : (
+          <Image
+            src={metadata.image}
+            alt={metadata.name ?? "NFT image"}
+            borderRadius={"10px"}
+          />
+        )}
         <Text fontWeight={"semibold"} marginTop={"15px"}>
           {metadata.name}
         </Text>
