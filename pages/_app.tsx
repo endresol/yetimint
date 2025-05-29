@@ -30,7 +30,15 @@ export default function App({ Component, pageProps }: AppProps) {
         />
 
         <meta property="og:image" content={image} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={image} />
+        <meta name="twitter:title" content={headerText} />
+        <meta
+          name="twitter:description"
+          content="Welcome to the ICE Coin Flip - a high stakes spectacle where every wallet becomes a gambler, and every flip becomes lore"
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+
         <title>{headerText}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
